@@ -28,7 +28,7 @@ input {
 }
 
 .outputs-container {
-    border: solid 1px #302E2D;
+    border: solid 2px #302E2D;
     background: transparent;
     color: antiquewhite;
     font-size: 2vh;
@@ -41,11 +41,12 @@ input {
 }
 
 .inputs-container {
-    border: solid 1px #302E2D;
+    border: solid 2px #302E2D;
     background: transparent;
     color: antiquewhite;
     font-size: 2vh;
     width: 100%;
     height: 100%;
+    padding: 0px 30px; 
     outline: none;
 }
