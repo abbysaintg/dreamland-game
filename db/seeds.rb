@@ -1,8 +1,8 @@
 puts "Clearing db..."
-Output.destroy_all
+Response.destroy_all
 
-puts "Creating outputs"
-Output.create(text: "Welcome!")
-Output.create(text: "Type anything to get started")
+puts "Creating responses"
+Response.create(output: "Hello and welcome!")
+Response.create(output: "type anything to begin")
 
 puts "Finished seeding!"

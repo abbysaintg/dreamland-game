@@ -1,2 +1,0 @@
-class Output < ApplicationRecord
-end
