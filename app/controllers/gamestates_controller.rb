@@ -14,16 +14,18 @@ class GamestatesController < ApplicationController
         case input
         when "help"
             output = help()
+        when "cheat"
+            output = cheat()
+        when /^(sit|sit down)$/
+            output = sit()
+        when /^say (.*)/
+            output = "You say #{$1}, but no one seems to hear you."
         when "look"
             output = LocationsController.new.get_look()
-        when "north"
-            output = LocationsController.new.go_north()
-        when "east"
-            output = LocationsController.new.go_east()
-        when "south"
-            output = LocationsController.new.go_south()
-        when "west"
-            output = LocationsController.new.go_west()
+        when /^(walk north|walk n|go north|north|go n|n|walk east|walk e|go east|east|go e|e|walk south|walk s|go south|south|go s|s|walk west|walk w|go west|west|go w|w)$/
+            output = LocationsController.new.handle_move(input)
+        when /^(walk|walk |go |go)$/
+            output = "Where do you want to go?"
         else
             output = "I don't understand \"#{input}\"."
         end
@@ -43,6 +45,14 @@ class GamestatesController < ApplicationController
 
     def help
         return "Help is on the way!"
+    end
+
+    def sit 
+        return "You've got things to do!"
+    end
+
+    def cheat
+        return "The answer is 42."
     end
 
 end

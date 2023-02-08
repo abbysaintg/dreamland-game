@@ -78,9 +78,9 @@ function Game() {
         <div className='game-container'>
             <div className='outputs-container' ref={containerRef}>
                 {outputs.map((output) => (
-                    <div key={output.id} className='output' ref={output.id === outputs[outputs.length - 1].id ? bottomRef : null}>
-                        <div>{output.input ? <>&gt; {output.input}</> : null}</div>
-                        <div>{output.output}</div>
+                    <div key={output.id} ref={output.id === outputs[outputs.length - 1].id ? bottomRef : null}>
+                        <div className='output'>{output.input ? <>&gt; {output.input}</> : null}</div>
+                        <div className='output'>{output.output}</div>
                     </div>
                 ))}
             </div>

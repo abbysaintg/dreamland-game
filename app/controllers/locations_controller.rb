@@ -28,6 +28,21 @@ class LocationsController < ApplicationController
         end
     end
 
+    def handle_move(input)
+        case input
+        when /^(walk north|walk n|go north|north|go n|n)$/
+            go_north()
+        when /^(walk east|walk e|go east|east|go e|e)$/
+            go_east()
+        when /^(walk south|walk s|go south|south|go s|s)$/
+            go_south()
+        when /^(walk west|walk w|go west|west|go w|w)$/
+            go_west()
+        end
+    end
+
+    private
+
     def go_north()
         player_location = Location.find_by(current_room: true)
         if player_location.name == "central room"
@@ -79,8 +94,6 @@ class LocationsController < ApplicationController
             return "You can't go that way."
         end
     end
-
-    private
 
     def update_current_room(player_location, new_room)
         player_location.update(current_room: false)

@@ -4,7 +4,7 @@
     box-sizing: border-box;
     user-select: none;
     background-color: black;
-    font-family: monospace;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 body {
@@ -22,9 +22,9 @@ input {
 .game-container {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 16fr 1fr;
-    width: 1000px;
-    height: 800px;
+    grid-template-rows: 14fr 1fr;
+    width: 90vw;
+    height: 90vh;
 }
 
 .outputs-container {
@@ -33,14 +33,14 @@ input {
     color: antiquewhite;
     font-size: 2vh;
     padding: 30px;
-    line-height: 5vh;
-    max-height: 80vh;
+    max-height: 83vh;
     overflow-y: scroll;
     scroll-behavior: smooth;
 }
 
 .output {
     background: transparent;
+    padding: 7px 0px;
 }
 
 .inputs-container {
@@ -53,3 +53,6 @@ input {
     padding: 0px 30px; 
     outline: none;
 }
+
+
+                                                                                                  
