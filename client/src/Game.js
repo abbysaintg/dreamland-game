@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 
 function Game() {
-    const [responses, setResponses] = useState([])
+    const [outputs, setOutputs] = useState([])
     const [input, setInput] = useState("")
     const inputRef = useRef(null)
     const containerRef = useRef(null)
@@ -9,26 +9,28 @@ function Game() {
 
     // FETCH OUTPUTS
     useEffect(() => {
-        fetch("/responses")
+        fetch("/gamestates")
             .then((r) => r.json())
-            .then((data) => setResponses(data))
+            .then((data) => {
+                // console.log(data)
+                setOutputs(data)})
     }, [])
 
     // SUBMIT USER INPUT
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
             if (input === "reset") {
-                fetch(`/responses/${responses[responses.length - 1].id}`, {
+                fetch(`/gamestates/${outputs[outputs.length - 1].id}`, {
                     method: "DELETE",
                 })
-                    .then((response) => {
-                        if (!response.ok) {
-                            throw new Error(`Failed to delete response, status code: ${response.status}`)
+                    .then((resp) => {
+                        if (!resp.ok) {
+                            throw new Error(`Failed to reset, status code: ${outputs.status}`)
                         }
-                        return response
+                        return resp
                     })
                     .then(() => {
-                        setResponses([responses[0], responses[1]])
+                        setOutputs([outputs[0], outputs[1], outputs[2]])
                         setInput("")
                         inputRef.current.focus()
                     })
@@ -36,16 +38,17 @@ function Game() {
                         console.error(error)
                     })
             } else {
-                fetch("/responses", {
+                fetch("/gamestates", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({ input }),
                 })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        setResponses([...responses, data])
+                    .then((resp) => resp.json())
+                    .then((resp) => {
+                        console.log(resp)
+                        setOutputs([...outputs, resp])
                         setInput("")
                         inputRef.current.focus()
                     })
@@ -58,7 +61,7 @@ function Game() {
         if (bottomRef.current) {
             bottomRef.current.scrollIntoView({ behavior: "smooth" })
         }
-    }, [responses])
+    }, [outputs])
 
     // REMOVE PLACEHOLDER TEXT
     const handleFocus = (event) => {
@@ -73,9 +76,10 @@ function Game() {
     return (
         <div className='game-container'>
             <div className='outputs-container' ref={containerRef}>
-                {responses.map((response) => (
-                    <div key={response.id} className='output' ref={response.id === responses[responses.length - 1].id ? bottomRef : null}>
-                        {response.output}
+                {outputs.map((output) => (
+                    <div key={output.id} className='output' ref={output.id === outputs[outputs.length - 1].id ? bottomRef : null}>
+                        <div>{output.input ? <>&gt; {output.input}</> : null}</div>
+                        <div>{output.output}</div>
                     </div>
                 ))}
             </div>
