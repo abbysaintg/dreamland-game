@@ -12,9 +12,14 @@ class LocationsController < ApplicationController
         return "You are in the #{player_location.name}. #{player_location.description}"
     end
 
-    def get_location()
+    def get_location_name()
         player_location = Location.find_by(current_room: true)
         return player_location.name
+    end
+
+    def get_location_id()
+        player_location_id = Location.find_by(current_room: true)
+        return player_location_id.id
     end
 
     def reset_location()
