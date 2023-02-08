@@ -15,16 +15,22 @@ class GamestatesController < ApplicationController
         when "help"
             output = help()
         when "look"
-            output = LocationsController.new.get_location()
-        when /go north|north|n|go east|east|e|go south|south|s|go west|west|w/
-            output = LocationsController.new.handle_move(input)
+            output = LocationsController.new.get_look()
+        when "north"
+            output = LocationsController.new.go_north()
+        when "east"
+            output = LocationsController.new.go_east()
+        when "south"
+            output = LocationsController.new.go_south()
+        when "west"
+            output = LocationsController.new.go_west()
         else
             output = "I don't understand \"#{input}\"."
         end
 
-        current_room = LocationsController.new.get_location()
-        gamestate = Gamestate.create(input: input, output: output, room: current_room)
-        render json: { input: input, output: output, id: gamestate.id }
+        player_location = LocationsController.new.get_location()
+        gamestate = Gamestate.create(input: input, output: output, room: player_location)
+        render json: { input: input, output: output, id: gamestate.id, room: player_location }
     end
 
     def destroy
@@ -38,6 +44,5 @@ class GamestatesController < ApplicationController
     def help
         return "Help is on the way!"
     end
-
 
 end
