@@ -13,7 +13,8 @@ function Game() {
             .then((r) => r.json())
             .then((data) => {
                 // console.log(data)
-                setOutputs(data)})
+                setOutputs(data)
+            })
     }, [])
 
     // SUBMIT USER INPUT

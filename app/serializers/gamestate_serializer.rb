@@ -1,3 +1,3 @@
 class GamestateSerializer < ActiveModel::Serializer
-  attributes :id, :output, :input
+  attributes :id, :output, :input, :room
 end
