@@ -31,6 +31,7 @@ function Game() {
                         return resp
                     })
                     .then(() => {
+                        console.log("game reset")
                         setOutputs([outputs[0], outputs[1], outputs[2]])
                         setInput("")
                         inputRef.current.focus()

@@ -10,27 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_08_203154) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_09_172431) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "gamestates", force: :cascade do |t|
-    t.string "output"
     t.string "input"
-    t.string "room"
+    t.string "output"
+    t.bigint "location_id", null: false
+    t.index ["location_id"], name: "index_gamestates_on_location_id"
   end
 
   create_table "items", force: :cascade do |t|
     t.string "name"
-    t.string "description"
-    t.integer "location_id"
-    t.boolean "in_inventory"
+    t.string "desc"
+    t.bigint "location_id", null: false
+    t.index ["location_id"], name: "index_items_on_location_id"
   end
 
   create_table "locations", force: :cascade do |t|
     t.string "name"
-    t.string "description"
-    t.boolean "current_room"
+    t.string "desc"
+    t.boolean "current_location"
+    t.boolean "visited"
   end
 
+  add_foreign_key "gamestates", "locations"
+  add_foreign_key "items", "locations"
 end

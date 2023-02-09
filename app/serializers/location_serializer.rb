@@ -1,4 +1,5 @@
 class LocationSerializer < ActiveModel::Serializer
-  attributes :id, :name, :description, :current_room
-  has_many :items
+    attributes :id, :name, :desc, :current_location, :visited
+    has_many :items
+    has_many :gamestates
 end
