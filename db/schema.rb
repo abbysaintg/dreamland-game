@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_09_172431) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_09_194329) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -33,6 +33,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_09_172431) do
     t.string "desc"
     t.boolean "current_location"
     t.boolean "visited"
+    t.string "exits"
   end
 
   add_foreign_key "gamestates", "locations"

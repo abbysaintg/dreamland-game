@@ -1,11 +1,11 @@
 class ItemsController < ApplicationController
-    # def index
-    #     render json: Item.all
-    # end
+    def index
+        render json: Item.all
+    end
 
-    # def show
-    #     render json: Item.find(params[:id])
-    # end
+    def show
+        render json: Item.find(params[:id])
+    end
 
     def get_inventory
         items = Item.where(location_id: 1)
@@ -37,7 +37,7 @@ class ItemsController < ApplicationController
         item_to_drop = Item.find_by(name: item)
         if item_to_drop && item_to_drop.location_id == 1
             item_to_drop.update(location_id: current_location_id)
-            return "You drop the #{item_to_drop.name}."
+            return "You get the #{item_to_drop.name} out of your bag and drop it."
         else
             return "You don't have a #{item} in your bag."
         end

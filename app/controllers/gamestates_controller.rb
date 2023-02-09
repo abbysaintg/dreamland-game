@@ -31,7 +31,12 @@ class GamestatesController < ApplicationController
             output = ItemsController.new.drop_item($1, current_location_id)
         when /^(inventory|inv|i)$/
             output = ItemsController.new.get_inventory()
+        when /^unlock door/
+            output = LocationsController.new.unlock()
+        when /^lock door/
+            output = LocationsController.new.lock()
         when "test"
+            output = "testing"
             # room = LocationsController.new.get_location(6)
             # output = ItemsController.new.get_location_items(room)
         else
@@ -45,6 +50,7 @@ class GamestatesController < ApplicationController
 
     def destroy
         LocationsController.new.reset_location()
+        LocationsController.new.reset_locks()
         ItemsController.new.reset_inventory()
         Gamestate.where("id > 3").destroy_all
         head :no_content
