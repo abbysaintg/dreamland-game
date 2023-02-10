@@ -11,6 +11,8 @@ class GamestatesController < ApplicationController
         case input
         when "help"
             output = help()
+        when /^examine (.*)/
+            output = examine($1, current_location_id)
         when "cheat"
             output = cheat()
         when /^(sit|sit down)$/
@@ -19,6 +21,12 @@ class GamestatesController < ApplicationController
             output = jump()
         when /^say (.*)/
             output = say($1)
+        when /^eat (.*)/
+            output = eat($1, current_location_id)
+        when /^drink (.*)/
+            output = drink($1, current_location_id)
+        when /^wear (.*)/
+            output = wear($1, current_location_id)
         when /^(walk|walk |go |go)$/
             output = where()
         when "look"
@@ -35,10 +43,14 @@ class GamestatesController < ApplicationController
             output = LocationsController.new.unlock()
         when /^lock door/
             output = LocationsController.new.lock()
-        when "test"
-            output = "testing"
-            # room = LocationsController.new.get_location(6)
-            # output = ItemsController.new.get_location_items(room)
+        when "lock"
+            output = what_lock()
+        when "unlock" 
+            output = what_unlock()
+        when /^test (.*)/
+            # output = "testing"
+            location = LocationsController.new.get_location($1)
+            output = ItemsController.new.get_location_items(location)
         else
             output = error(input)
         end
@@ -62,6 +74,14 @@ class GamestatesController < ApplicationController
         return "Help is on the way!"
     end
 
+    def examine(input, current_location_id)
+        if input.length > 0
+            ItemsController.new.examine_item(input, current_location_id)
+        else 
+            return "What do you want to examine?"
+        end
+    end
+
     def cheat
         return "The answer is 42."
     end
@@ -78,8 +98,40 @@ class GamestatesController < ApplicationController
         return "You say \"#{input}\", but no one seems to hear you."
     end
 
+    def eat(input, current_location_id)
+        if input.include?("cake")
+            ItemsController.new.eat_cake(current_location_id)
+        else
+            return "I don't think you'd want to eat that."
+        end 
+    end
+
+    def drink(input, current_location_id)
+        if input.include?("water")
+            ItemsController.new.drink_water(current_location_id)
+        else
+            return "I don't think you'd want to drink that."
+        end 
+    end
+
+    def wear(input, current_location_id)
+        if input.include?("hat")
+            ItemsController.new.wear_hat(current_location_id)
+        else
+             return "I don't think you can wear that."
+        end 
+    end
+
     def where
         return "Where do you want to go?"
+    end
+
+    def what_lock
+        return "What do you want to lock?"
+    end
+
+    def what_unlock
+        return "What do you want to unlock?"
     end
 
     def error(input)

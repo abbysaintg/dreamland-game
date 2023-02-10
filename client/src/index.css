@@ -2,7 +2,7 @@
 *::before,
 *::after {
     box-sizing: border-box;
-    user-select: none;
+    /* user-select: none; */
     background-color: black;
     font-family: 'Courier New', Courier, monospace;
 }
@@ -38,9 +38,16 @@ input {
     scroll-behavior: smooth;
 }
 
-.output {
+.output-input {
     background: transparent;
-    padding: 7px 0px;
+    padding: 20px 0px 5px 0px;
+    font-weight: 600;
+}
+
+.output-output {
+    background: transparent;
+    padding: 5px 0px 20px 0px;
+    font-weight: 400;
 }
 
 .inputs-container {
