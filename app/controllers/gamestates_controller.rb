@@ -27,6 +27,8 @@ class GamestatesController < ApplicationController
             output = drink($1, current_location_id)
         when /^wear (.*)/
             output = wear($1, current_location_id)
+        when /^remove (.*)/
+            output = remove($1)
         when /^(walk|walk |go |go)$/
             output = where()
         when "look"
@@ -101,6 +103,8 @@ class GamestatesController < ApplicationController
     def eat(input, current_location_id)
         if input.include?("cake")
             ItemsController.new.eat_cake(current_location_id)
+        elsif input == ""
+            return "What do you want to eat?"
         else
             return "I don't think you'd want to eat that."
         end 
@@ -120,6 +124,14 @@ class GamestatesController < ApplicationController
         else
              return "I don't think you can wear that."
         end 
+    end
+
+    def remove(input)
+        if input.include?("hat")
+            ItemsController.new.remove_hat()
+        else 
+            return "You aren't wearing that."
+        end
     end
 
     def where

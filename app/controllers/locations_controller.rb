@@ -11,13 +11,6 @@ class LocationsController < ApplicationController
         current_location = Location.find_by(current_location: true)
         location_items = ItemsController.new.get_location_items(current_location)
         return "You are in the #{current_location.name}. #{current_location.desc} #{current_location.exits} #{location_items}"
-        # if location_items.blank?
-        #     return "You are in the #{current_location.name}. #{current_location.desc} #{current_location.exits}"
-        # elsif location_items.split(" and a ").count >= 1
-        #     return "You are in the #{current_location.name}. #{current_location.desc} #{current_location.exits} #{location_items}"
-        # else
-        #     return "You are in the #{current_location.name}. #{current_location.desc} #{current_location.exits} #{location_items}"
-        # end
     end
 
     def get_location_id()

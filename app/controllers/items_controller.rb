@@ -59,8 +59,12 @@ class ItemsController < ApplicationController
         item_to_drop = Item.find_by(name: item)
         if item_to_drop && item_to_drop.location_id == 3
             item_to_drop.update(location_id: current_location_id)
-            return "You drop the #{item_to_drop.name}."
-        else
+            return "You get the #{item_to_drop.name} out of your bag and drop it to the ground."
+        elsif 
+            item_to_drop && item_to_drop.location_id == 2
+            item_to_drop.update(location_id: current_location_id)
+            return "You take the #{item_to_drop.name} off and drop it to the ground."
+        else 
             return "You don't have a #{item} in your bag."
         end
     end
@@ -76,6 +80,8 @@ class ItemsController < ApplicationController
         hat.update(location_id: 6)
         bottle = Item.find_by(name: "water bottle")
         bottle.update(location_id: 7)
+        empty_bottle = Item.find_by(name: "empty bottle")
+        empty_bottle.destroy
         cake = Item.find_by(name: "slice of cake")
         cake.update(location_id: 8)
     end
@@ -105,9 +111,22 @@ class ItemsController < ApplicationController
         hat = Item.find_by(name: "hat")
         if current_location_id == hat.location_id
             hat.update(location_id: 2)
-            return "You put the hat on. It's warm and stylish."
+            return "You take the hat and put it on. It's warm and stylish."
+        elsif hat.location_id == 3
+            hat.update(location_id: 2)
+            return "You take the hat out of your bag and put it on. It's warm and sylish."
         else 
             return "You don't see a hat here."
+        end
+    end
+
+    def remove_hat()
+        hat = Item.find_by(name: "hat")
+        if hat.location_id == 2
+            hat.update(location_id: 3)
+            return "You take off the hat and put it in your bag."
+        else 
+            return "You aren't wearing a hat."
         end
     end
 
