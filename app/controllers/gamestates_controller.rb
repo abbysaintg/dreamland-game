@@ -33,7 +33,7 @@ class GamestatesController < ApplicationController
             output = where()
         when "look"
             output = LocationsController.new.get_location_desc()
-        when /^(walk north|walk n|go north|north|go n|n|walk east|walk e|go east|east|go e|e|walk south|walk s|go south|south|go s|s|walk west|walk w|go west|west|go w|w)$/
+        when /^(walk north|walk n|go north|north|go n|n|walk east|walk e|go east|east|go e|e|walk south|walk s|go south|south|go s|s|walk west|walk w|go west|west|go w|w|go up|up|go down|down|climb up|climb down)$/
             output = LocationsController.new.handle_move(input)
         when /^take (.*)/
             output = ItemsController.new.take_item($1, current_location_id)
@@ -41,14 +41,20 @@ class GamestatesController < ApplicationController
             output = ItemsController.new.drop_item($1, current_location_id)
         when /^(inventory|inv|i)$/
             output = ItemsController.new.get_inventory()
-        when /^unlock door/
-            output = LocationsController.new.unlock()
-        when /^lock door/
-            output = LocationsController.new.lock()
-        when "lock"
-            output = what_lock()
-        when "unlock" 
-            output = what_unlock()
+        # when /^unlock door/
+        #     output = LocationsController.new.unlock()
+        # when /^lock door/
+        #     output = LocationsController.new.lock()
+        # when "lock"
+        #     output = what_lock()
+        # when "unlock" 
+        #     output = what_unlock()
+        when "move rug"
+            output = LocationsController.new.move_rug(current_location_id)
+        when /^teleport (.*)/
+            current_location = LocationsController.new.get_location(current_location_id)
+            new_location = LocationsController.new.get_location($1)
+            output = LocationsController.new.update_current_location(current_location, new_location)
         when /^test (.*)/
             # output = "testing"
             location = LocationsController.new.get_location($1)
@@ -63,8 +69,8 @@ class GamestatesController < ApplicationController
     end
 
     def destroy
-        LocationsController.new.reset_location()
-        LocationsController.new.reset_locks()
+        LocationsController.new.reset_locations()
+        # LocationsController.new.reset_locks()
         ItemsController.new.reset_inventory()
         Gamestate.where("id > 3").destroy_all
         head :no_content
@@ -138,13 +144,14 @@ class GamestatesController < ApplicationController
         return "Where do you want to go?"
     end
 
-    def what_lock
-        return "What do you want to lock?"
-    end
+    # def what_lock
+    #     return "What do you want to lock?"
+    # end
 
-    def what_unlock
-        return "What do you want to unlock?"
-    end
+    # def what_unlock
+    #     return "What do you want to unlock?"
+    # end
+
 
     def error(input)
         return "I don't understand \"#{input}\"."

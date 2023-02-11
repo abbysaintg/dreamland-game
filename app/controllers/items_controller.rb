@@ -80,8 +80,8 @@ class ItemsController < ApplicationController
         hat.update(location_id: 6)
         bottle = Item.find_by(name: "water bottle")
         bottle.update(location_id: 7)
-        empty_bottle = Item.find_by(name: "empty bottle")
-        empty_bottle.destroy
+        # empty_bottle = Item.find_by(name: "empty bottle")
+        # empty_bottle.destroy
         cake = Item.find_by(name: "slice of cake")
         cake.update(location_id: 8)
     end
