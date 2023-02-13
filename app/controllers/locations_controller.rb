@@ -10,7 +10,7 @@ class LocationsController < ApplicationController
     def get_location_desc()
         current_location = Location.find_by(current_location: true)
         location_items = ItemsController.new.get_location_items(current_location)
-        return "#{current_location.name}: #{current_location.id}. #{current_location.desc} #{current_location.exits} #{location_items}"
+        return "#{current_location.desc} #{current_location.exits} #{location_items}"
     end
 
     def get_location_id()
@@ -23,21 +23,47 @@ class LocationsController < ApplicationController
         return location
     end
 
-    def reset_locations()
-        kitchen = Location.find(50)
-        kitchen.update(desc: "A warm kitchen, sunlight streams in through the windows. A table and chairs fit neatly into a corner. A wide woven rug is here.")
-        kitchen.update(exits: "The living room is to the west.")
-        current_location = Location.find_by(current_location: true)
-        spawn_room = Location.find(5)
-        current_location.update(current_location: false)
-        spawn_room.update(current_location: true)
+    def open_chest(current_location_id)
+        current_location = Location.find(current_location_id)
+        shipwreck = Location.find(33)
+        key = ItemsController.new.find_item(3)
+        if current_location == shipwreck && shipwreck.desc.include?("opened")
+            return "The chest is already opened."
+        elsif current_location == shipwreck && shipwreck.desc.include?("a locked wooden chest") && key.location_id == 3
+            return "The chest is locked. You'll need to unlock it first!"
+        elsif current_location == shipwreck && shipwreck.desc.include?("a locked wooden chest")
+            return "The chest is locked and you do not have the right key to unlock it."
+        elsif current_location == shipwreck && shipwreck.desc.include?("an unlocked wooden chest")
+            shipwreck.update(desc: "You hold your breath, swimming at the bottom of the lake. It's murky and eerily quiet, cold water surrounds you. There's an old sunken shipwreck here, deteriorating at the bottom of the lake. You can see an opened wooden chest nestled in the bowels of the ship. There is a brass doorknob inside the chest.")
+            return "You open the chest. There is a brass doorknob inside."
+        else
+            return "I don't see a chest here."
+        end
+    end
+
+    def unlock_chest(current_location_id)
+        current_location = Location.find(current_location_id)
+        shipwreck = Location.find(33)
+        key = ItemsController.new.find_item(3)
+        if current_location == shipwreck && shipwreck.desc.include?("a locked wooden chest") && key.location_id == 3
+            shipwreck.update(desc: "You hold your breath, swimming at the bottom of the lake. It's murky and eerily quiet, cold water surrounds you. There's an old sunken shipwreck here, deteriorating at the bottom of the lake. You can see an unlocked wooden chest nestled in the bowels of the ship.")
+            return "You unlock the chest."
+        elsif current_location == shipwreck && shipwreck.desc.include?("a locked wooden chest")
+            return "You do not have a key to unlock this chest."
+        elsif current_location == shipwreck && shipwreck.desc.include?("an unlocked wooden chest")
+            return "The chest is already unlocked, but remains closed."
+        else
+            return "I don't see a chest here."
+        end
     end
 
     def move_rug(current_location_id)
-        if current_location_id == 50
-            kitchen = Location.find(50)
-            kitchen.update(desc: "A warm kitchen, sunlight streams in through the windows. A table and chairs fit neatly into a corner. The rug has been pushed to the side, revealing a wooden trap down in the floor.")
-            kitchen.update(exits: "The living room is to the west, a trap door leads down.")
+        kitchen = Location.find(50)
+        if current_location_id == 50 && kitchen.desc.include?("trapdoor")
+            kitchen.update(desc: "A warm kitchen, sunlight streams in through the windows. A wooden table and two chairs fit neatly into a corner. A woven rug covers the floor.")
+            return "You move the rug back to cover the trapdoor."
+        elsif current_location_id == 50 && !kitchen.desc.include?("trapdoor")
+            kitchen.update(desc: "A warm kitchen, sunlight streams in through the windows. A table and chairs fit neatly into a corner. The rug has been pushed to the side, revealing a wooden trapdoor in the floor.")
             return "You move the rug and find a trapdoor beneath."
         else
             return "There is no rug here to move."
@@ -61,31 +87,32 @@ class LocationsController < ApplicationController
         end
     end
 
-    # def unlock()
-    #     key = Item.find_by(name: "key")
-    #     current_location = Location.find_by(current_location: true)
-    #     exits = current_location.exits
-    #     if key.location_id == 3 && exits.include?("locked")
-    #         exits.gsub!("a locked", "an unlocked")
-    #         current_location.update(exits: exits)
-    #         if current_location.name == "west room"
-    #             central = Location.find_by(name: "central room")
-    #             central_exits = central.exits
-    #             central_exits.gsub!("a locked", "an unlocked")
-    #             central.update(exits: central_exits)
-    #         elsif current_location.name == "central room"
-    #             west = Location.find_by(name: "west room")
-    #             west_exits = west.exits
-    #             west_exits.gsub!("a locked", "an unlocked")
-    #             west.update(exits: west_exits)
-    #         end
-    #         return "You unlock the door with the key."
-    #     elsif key.location_id == 3 && !exits.include?("locked")
-    #         return "There is nothing to unlock here."
-    #     else
-    #         return "You don't have a key to unlock this door."
-    #     end
-    # end
+    def fix_door()
+        doorknob = ItemsController.new.find_item(5)
+        current_location = Location.find_by(current_location: true)
+        if current_location.id == 48 && doorknob.location_id == 3 && current_location.exits.include?("missing a doorknob")
+            current_location.update(exits: "The entrace to the cottage is directly east. Towards the north you spot the tower, to the south the wide forest resides, and another path winds westward through the trees.")
+            doorknob.update(location_id: 1)
+            return "You fit the doorknob into the door. The door is now fixed."
+        else
+            return "You can't do that."
+        end
+    end
+
+    def unlock()
+        key = Item.find_by(name: "key")
+        current_location = Location.find_by(current_location: true)
+        if current_location.id == 48 && key.location_id == 3 && current_location.exits.include?("locked")
+            cottage_interior = Location.find(49)
+            cottage_interior.update(exits: "The unlocked front door of the cottage leads out to the west, and the kitchen is through the east door.")
+            current_location.update(exits: "The entrace to the cottage is directly east, the door is unlocked. Towards the north you spot the tower, to the south the wide forest resides, and another path winds westward through the trees.")
+            return "You unlock the cottage door with the key."
+        elsif current_location.id == 48 && exits.include?("unlocked")
+            return "The cottage door is already unlocked."
+        else
+            return "You don't have a key to unlock this door."
+        end
+    end
 
     # def lock()
     #     key = Item.find_by(name: "key")
@@ -113,19 +140,6 @@ class LocationsController < ApplicationController
     #     end
     # end
 
-    # def reset_locks()
-    #     central = Location.find_by(name: "central room")
-    #     west = Location.find_by(name: "west room")
-    #     central_exits = central.exits
-    #     west_exits = west.exits
-    #     central_exits.gsub!("an unlocked", "a locked")
-    #     west_exits.gsub!("an unlocked", "a locked")
-    #     central.update(exits: central_exits)
-    #     west.update(exits: west_exits)
-    # end
-
-    # private
-
     def go_north()
         current_location = Location.find_by(current_location: true)
         location_map = {
@@ -136,10 +150,22 @@ class LocationsController < ApplicationController
             16 => 15,
             17 => 16,
             18 => 17,
+            19 => 37,
+            20 => 36,
+            21 => 35,
             22 => 23,
             23 => 24,
             24 => 25,
             25 => 26,
+            28 => 27,
+            29 => 12,
+            30 => 13,
+            31 => 28,
+            32 => 29,
+            34 => 30,
+            35 => 16,
+            36 => 32,
+            37 => 34,
             39 => 40,
             40 => 41,
             43 => 39,
@@ -150,12 +176,14 @@ class LocationsController < ApplicationController
             57 => 54,
             60 => 57,
             63 => 58,
-            66 => 61,
+            65 => 60,
             67 => 62,
             69 => 64,
             72 => 67,
+            73 => 68,
             77 => 72,
             75 => 70,
+            78 => 73,
             79 => 74,
             76 => 71,
             81 => 76,
@@ -164,12 +192,13 @@ class LocationsController < ApplicationController
             84 => 83,
             85 => 84,
         }
-        current_location = Location.find_by(current_location: true)
-        if current_location.exits.include?("a locked door to the north")
-            return "The door to the north is locked."
+        if current_location.desc.include?("a grumpy wizard")
+            return "You try to go into the tower but the grumpy wizard shouts obscenities at you."
         elsif location_map.key?(current_location.id)
             new_location = Location.find(location_map[current_location.id])
             update_current_location(current_location, new_location)
+        elsif [58, 59, 61, 62, 64, 66, 68, 70, 71, 74, 80].include?(current_location.id) && !location_map.key?(current_location.id)
+            maze_reset(current_location)
         else
             return "You can't go that way."
         end
@@ -185,12 +214,24 @@ class LocationsController < ApplicationController
             12 => 13,
             13 => 14,
             14 => 38,
-            26 => 27,
-            22 => 21,
-            21 => 20,
-            20 => 19,
-            19 => 18,
             16 => 47,
+            19 => 18,
+            20 => 19,
+            25 => 28,
+            28 => 29,
+            29 => 30,
+            30 => 15,
+            24 => 31,
+            31 => 32,
+            32 => 34,
+            34 => 16,
+            23 => 35,
+            35 => 36,
+            36 => 37,
+            37 => 17,
+            21 => 20,
+            22 => 21,
+            26 => 27,
             38 => 39,
             43 => 44,
             44 => 45,
@@ -217,11 +258,13 @@ class LocationsController < ApplicationController
             86 => 87,
             87 => 88,
         }
-        if current_location.exits.include?("a locked door to the east")
+        if current_location.exits.include?("is locked")
             return "The door to the east is locked."
         elsif location_map.key?(current_location.id)
             new_location = Location.find(location_map[current_location.id])
             update_current_location(current_location, new_location)
+        elsif [62, 67, 72, 77, 82, 66, 71, 76, 75, 80, 78, 73, 69].include?(current_location.id) && !location_map.key?(current_location.id)
+            maze_reset(current_location)
         else
             return "You can't go that way."
         end
@@ -241,6 +284,18 @@ class LocationsController < ApplicationController
             24 => 23,
             25 => 24,
             26 => 25,
+            27 => 28,
+            12 => 29,
+            13 => 30,
+            28 => 31,
+            29 => 32,
+            30 => 34,
+            31 => 35,
+            32 => 36,
+            34 => 37,
+            35 => 21,
+            36 => 20,
+            37 => 19,
             39 => 43,
             40 => 39,
             41 => 40,
@@ -251,7 +306,7 @@ class LocationsController < ApplicationController
             54 => 57,
             57 => 60,
             58 => 63,
-            61 => 66,
+            60 => 65,
             62 => 67,
             64 => 69,
             67 => 72,
@@ -268,11 +323,13 @@ class LocationsController < ApplicationController
             84 => 85,
         }
         current_location = Location.find_by(current_location: true)
-        if current_location.exits.include?("a locked door to the south")
+        if current_location.exits.include?("locked")
             return "The door to the south is locked."
         elsif location_map.key?(current_location.id)
             new_location = Location.find(location_map[current_location.id])
             update_current_location(current_location, new_location)
+        elsif [59, 61, 63, 65, 66, 69, 75, 78, 79, 81, 82].include?(current_location.id) && !location_map.key?(current_location.id)
+            maze_reset(current_location)
         else
             return "You can't go that way."
         end
@@ -288,11 +345,23 @@ class LocationsController < ApplicationController
             12 => 27,
             13 => 12,
             14 => 13,
-            27 => 26,
+            15 => 30,
+            30 => 29,
+            29 => 28,
+            28 => 25,
+            16 => 34,
+            34 => 32,
+            32 => 31,
+            31 => 24,
+            17 => 37,
+            37 => 36,
+            36 => 35,
+            35 => 23,
             18 => 19,
             19 => 20,
             20 => 21,
             21 => 22,
+            27 => 26,
             39 => 38,
             44 => 43,
             45 => 44,
@@ -317,12 +386,16 @@ class LocationsController < ApplicationController
             80 => 79,
             82 => 81,
         }
-        current_location = Location.find_by(current_location: true)
-        if current_location.exits.include?("a locked door to the west")
-            return "The door to the west is locked."
+        # if current_location.exits.include?("locked")
+        #     return "The door to the west is locked."
+        lantern = ItemsController.new.find_item(1)
+        if current_location.id == 8 && (lantern.location_id != 3)
+            return "The cave looks too dark to enter without a light source."
         elsif location_map.key?(current_location.id)
             new_location = Location.find(location_map[current_location.id])
             update_current_location(current_location, new_location)
+        elsif [58, 63, 68, 73, 78, 74, 79, 70, 76, 81, 77, 72, 67].include?(current_location.id) && !location_map.key?(current_location.id)
+            maze_reset(current_location)
         else
             return "You can't go that way."
         end
@@ -341,13 +414,27 @@ class LocationsController < ApplicationController
 
     def go_down
         current_location = Location.find_by(current_location: true)
-        location_map = { 42 => 41, 32 => 33, 50 => 51 }
-        if location_map.key?(current_location.id)
+        kitchen = Location.find(50)
+        bottom_of_lake = Location.find(33)
+        location_map = { 42 => 41, 32 => 33 }
+        if current_location == kitchen && kitchen.desc.include?("trapdoor")
+            new_location = Location.find(51)
+            update_current_location(current_location, new_location)
+        elsif location_map.key?(current_location.id)
             new_location = Location.find(location_map[current_location.id])
             update_current_location(current_location, new_location)
         else
             return "You can't go that way."
         end
+    end
+
+    def teleport(input)
+        current_location = Location.find_by(current_location: true)
+        new_location = Location.find(input)
+        current_location.update(current_location: false)
+        new_location.update(current_location: true)
+        location_items = ItemsController.new.get_location_items(new_location)
+        return "You teleport to the #{new_location.name}. #{new_location.desc} #{new_location.exits} #{location_items}"
     end
 
     def update_current_location(current_location, new_location)
@@ -356,5 +443,28 @@ class LocationsController < ApplicationController
         new_location.update(visited: true)
         description = get_location_desc()
         return description
+    end
+
+    def maze_reset(current_location)
+        entrance = Location.find(60)
+        current_location.update(current_location: false)
+        entrance.update(current_location: true)
+        return "You take a wrong turn and get lost in the woods. You somehow appear back at the entrance to the forest. #{entrance.desc} #{entrance.exits}"
+    end
+
+    def reset_locations()
+        kitchen = Location.find(50)
+        kitchen.update(desc: "A warm kitchen, sunlight streams in through the windows. A wooden table and two chairs fit neatly into a corner. A woven rug covers the floor.")
+        shipwreck = Location.find(33)
+        shipwreck.update(desc: "You hold your breath, swimming at the bottom of the lake. It's murky and eerily quiet here, cold water surrounds you. There's an old sunken shipwreck here, deteriorating into the mud. You can see a locked wooden chest nestled in the bowels of the ship.")
+        cottage_exterior = Location.find(48)
+        cottage_exterior.update(exits: "he entrace to the cottage is directly east, but the door is missing a doorknob. Towards the north you spot the tower, to the south the wide forest resides, and another path winds westward through the trees.")
+        tower_entrance = Location.find(40)
+        tower_entrance.update(desc: "The stone tower stands tall, rising like a beacon in the forest. It's made from rough-hewn stone blocks, and the windows have been intricately created from colorful stained glass. There is a grumpy wizard here, rocking in a chair by the door. He hums to himself and eyes you suspiciously.")
+        Location.update_all(visited: false)
+        Location.update_all(current_location: false)
+        spawn_room = Location.find(5)
+        spawn_room.update(current_location: true)
+        spawn_room.update(visited: true)
     end
 end

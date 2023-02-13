@@ -13,6 +13,8 @@ class GamestatesController < ApplicationController
             output = help()
         when /^examine (.*)/
             output = examine($1, current_location_id)
+        when /^search (.*)/
+            output = search($1, current_location_id)
         when "cheat"
             output = cheat()
         when /^(sit|sit down)$/
@@ -23,8 +25,8 @@ class GamestatesController < ApplicationController
             output = say($1)
         when /^eat (.*)/
             output = eat($1, current_location_id)
-        when /^drink (.*)/
-            output = drink($1, current_location_id)
+        # when /^drink (.*)/
+        #     output = drink($1, current_location_id)
         when /^wear (.*)/
             output = wear($1, current_location_id)
         when /^remove (.*)/
@@ -41,20 +43,26 @@ class GamestatesController < ApplicationController
             output = ItemsController.new.drop_item($1, current_location_id)
         when /^(inventory|inv|i)$/
             output = ItemsController.new.get_inventory()
-        # when /^unlock door/
-        #     output = LocationsController.new.unlock()
+        when "unlock door"
+            output = LocationsController.new.unlock()
         # when /^lock door/
         #     output = LocationsController.new.lock()
-        # when "lock"
-        #     output = what_lock()
-        # when "unlock" 
-        #     output = what_unlock()
-        when "move rug"
+        when "lock"
+            output = what_lock()
+        when "unlock" 
+            output = what_unlock()
+        when "open chest"
+            output = LocationsController.new.open_chest(current_location_id)
+        when "unlock chest"
+            output = LocationsController.new.unlock_chest(current_location_id)
+        when /^(fix door|put doorknob in door)$/
+            output = LocationsController.new.fix_door()
+        when /^(push rug|move rug)$/
             output = LocationsController.new.move_rug(current_location_id)
+        when /^(give pickles to wizard|give jar to wizard)$/
+            output = give_pickles(current_location_id)
         when /^teleport (.*)/
-            current_location = LocationsController.new.get_location(current_location_id)
-            new_location = LocationsController.new.get_location($1)
-            output = LocationsController.new.update_current_location(current_location, new_location)
+            output = LocationsController.new.teleport($1)
         when /^test (.*)/
             # output = "testing"
             location = LocationsController.new.get_location($1)
@@ -90,6 +98,14 @@ class GamestatesController < ApplicationController
         end
     end
 
+    def search(input, current_location_id)
+        if input.length > 0
+            ItemsController.new.search_item(input, current_location_id)
+        else 
+            return "What do you want to examine?"
+        end
+    end
+
     def cheat
         return "The answer is 42."
     end
@@ -103,7 +119,7 @@ class GamestatesController < ApplicationController
     end
 
     def say(input)
-        return "You say \"#{input}\", but no one seems to hear you."
+        return "You say \"#{input}\", but no one seems to be listening."
     end
 
     def eat(input, current_location_id)
@@ -116,19 +132,19 @@ class GamestatesController < ApplicationController
         end 
     end
 
-    def drink(input, current_location_id)
-        if input.include?("water")
-            ItemsController.new.drink_water(current_location_id)
-        else
-            return "I don't think you'd want to drink that."
-        end 
-    end
+    # def drink(input, current_location_id)
+    #     if input.include?("water")
+    #         ItemsController.new.drink_water(current_location_id)
+    #     else
+    #         return "I don't think you'd want to drink that."
+    #     end 
+    # end
 
     def wear(input, current_location_id)
         if input.include?("hat")
             ItemsController.new.wear_hat(current_location_id)
         else
-             return "I don't think you can wear that."
+            return "I don't think you can wear that."
         end 
     end
 
@@ -144,14 +160,27 @@ class GamestatesController < ApplicationController
         return "Where do you want to go?"
     end
 
-    # def what_lock
-    #     return "What do you want to lock?"
-    # end
+    def what_lock
+        return "What do you want to lock?"
+    end
 
-    # def what_unlock
-    #     return "What do you want to unlock?"
-    # end
+    def what_unlock
+        return "What do you want to unlock?"
+    end
 
+    def give_pickles(current_location_id)
+        tower_entrance = LocationsController.new.get_location(40)
+        pickles = ItemsController.new.find_item(13)
+        if tower_entrance.id == current_location_id && pickles.location_id == 3
+            tower_entrance.update(desc: "The stone tower rises out of the earth like a beacon in the forest. It's made from rough-hewn stone blocks, and the windows have been intricately created from colorful stained glass. There is a wizard munching happily on pickles. He ignores you completely.")
+            pickles.update(location_id: 1)
+            return "You offer the jar of pickles to the wizard. He giggles in delight and takes the jar, immediately opening it and slurping down a pickle."
+        elsif tower_entrance.id == current_location_id
+            return "You don't have any pickles to give."
+        else
+            return "You don't see anyone to give pickles to."
+        end
+    end
 
     def error(input)
         return "I don't understand \"#{input}\"."
