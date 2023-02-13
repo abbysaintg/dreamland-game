@@ -33,8 +33,8 @@ class LocationsController < ApplicationController
             return "The chest is locked. You'll need to unlock it first!"
         elsif current_location == shipwreck && shipwreck.desc.include?("a locked wooden chest")
             return "The chest is locked and you do not have the right key to unlock it."
-        elsif current_location == shipwreck && shipwreck.desc.include?("an unlocked wooden chest")
-            shipwreck.update(desc: "You hold your breath, swimming at the bottom of the lake. It's murky and eerily quiet, cold water surrounds you. There's an old sunken shipwreck here, deteriorating at the bottom of the lake. You can see an opened wooden chest nestled in the bowels of the ship. There is a brass doorknob inside the chest.")
+        elsif current_location == shipwreck && shipwreck.desc.include?("an unlocked but closed wooden chest")
+            shipwreck.update(desc:"You hold your breath, swimming at the bottom of the lake. It's murky and eerily quiet, cold water surrounds you. There's an old sunken shipwreck here, deteriorating at the bottom of the lake. You can see an opened wooden chest nestled in the bowels of the ship. There is a brass doorknob inside the chest.",)
             return "You open the chest. There is a brass doorknob inside."
         else
             return "I don't see a chest here."
@@ -46,7 +46,9 @@ class LocationsController < ApplicationController
         shipwreck = Location.find(33)
         key = ItemsController.new.find_item(3)
         if current_location == shipwreck && shipwreck.desc.include?("a locked wooden chest") && key.location_id == 3
-            shipwreck.update(desc: "You hold your breath, swimming at the bottom of the lake. It's murky and eerily quiet, cold water surrounds you. There's an old sunken shipwreck here, deteriorating at the bottom of the lake. You can see an unlocked wooden chest nestled in the bowels of the ship.")
+            shipwreck.update(
+                desc: "You hold your breath, swimming at the bottom of the lake. It's murky and eerily quiet, cold water surrounds you. There's an old sunken shipwreck here, deteriorating at the bottom of the lake. You can see an unlocked but closed wooden chest nestled in the bowels of the ship.",
+            )
             return "You unlock the chest."
         elsif current_location == shipwreck && shipwreck.desc.include?("a locked wooden chest")
             return "You do not have a key to unlock this chest."
@@ -88,8 +90,8 @@ class LocationsController < ApplicationController
     end
 
     def fix_door()
-        doorknob = ItemsController.new.find_item(5)
         current_location = Location.find_by(current_location: true)
+        doorknob = ItemsController.new.find_item(5)
         if current_location.id == 48 && doorknob.location_id == 3 && current_location.exits.include?("missing a doorknob")
             current_location.update(exits: "The entrace to the cottage is directly east. Towards the north you spot the tower, to the south the wide forest resides, and another path winds westward through the trees.")
             doorknob.update(location_id: 1)
@@ -99,46 +101,35 @@ class LocationsController < ApplicationController
         end
     end
 
-    def unlock()
-        key = Item.find_by(name: "key")
+    def douse_fire()
         current_location = Location.find_by(current_location: true)
-        if current_location.id == 48 && key.location_id == 3 && current_location.exits.include?("locked")
-            cottage_interior = Location.find(49)
-            cottage_interior.update(exits: "The unlocked front door of the cottage leads out to the west, and the kitchen is through the east door.")
-            current_location.update(exits: "The entrace to the cottage is directly east, the door is unlocked. Towards the north you spot the tower, to the south the wide forest resides, and another path winds westward through the trees.")
-            return "You unlock the cottage door with the key."
-        elsif current_location.id == 48 && exits.include?("unlocked")
-            return "The cottage door is already unlocked."
-        else
-            return "You don't have a key to unlock this door."
+        wizard_interior = Location.find(41)
+        cottage_interior = Location.find(49)
+        forest_spirit_location = Location.find(57)
+        empty_bucket = ItemsController.new.find_item(12)
+        bucket_of_water = ItemsController.new.find_item(15)
+        if current_location.id == 49 || current_location.id == 41
+            if bucket_of_water.location_id == 3 && current_location.desc.include?("crackles")
+                bucket_of_water.update(location_id: 1)
+                empty_bucket.update(location_id: 3)
+                if current_location == cottage_interior
+                    cottage_interior.update(desc: "The inside of the cottage is warm and inviting. The living room is filled with an overstuffed sofa and a worn rocking chair. The hearth is damp, the fire dead.")
+                elsif current_location == wizard_interior
+                    wizard_interior.update(desc: "The main room of the tower is filled to the brim with magical artifacts, books, potions, dried herbs, and plants you don't recognize. The hearth is damp, the fire dead.")
+                end
+                if !wizard_interior.desc.include?("crackles") && !cottage_interior.desc.include?("crackles")
+                    forest_spirit_location.update(desc: "The forest looms above you. It's dark and menacing. You'd rather not go into it. A cute tree spirit dances in the breeze around you.")
+                else
+                    forest_spirit_location.update(desc: "The forest looms above you. It's dark and menacing. You'd rather not go into it. The tree spirit seems calmer now, but still pissed at you. It spits pine needles at your face.")
+                end
+                return "You toss the bucket of water on the fire. It hisses, steams, and eventually goes out."
+            elsif bucket_of_water.location_id == 3 && current_location.desc.include?("dead")
+                return "The fire is out. Adding more water would be pointless."
+            else
+                return "You do not have water to douse the fire with."
+            end
         end
     end
-
-    # def lock()
-    #     key = Item.find_by(name: "key")
-    #     current_location = Location.find_by(current_location: true)
-    #     exits = current_location.exits
-    #     if key.location_id == 3 && exits.include?("unlocked")
-    #         exits.gsub!("an unlocked", "a locked")
-    #         current_location.update(exits: exits)
-    #         if current_location.name == "west room"
-    #             central = Location.find_by(name: "central room")
-    #             central_exits = central.exits
-    #             central_exits.gsub!("an unlocked", "a locked")
-    #             central.update(exits: central_exits)
-    #         elsif current_location.name == "central room"
-    #             west = Location.find_by(name: "west room")
-    #             west_exits = west.exits
-    #             west_exits.gsub!("an unlocked", "a locked")
-    #             west.update(exits: west_exits)
-    #         end
-    #         return "You lock the door with the key."
-    #     elsif key.location_id == 3 && !exits.include?("unlocked")
-    #         return "There is nothing to lock here."
-    #     else
-    #         return "You don't have a key to lock this door."
-    #     end
-    # end
 
     def go_north()
         current_location = Location.find_by(current_location: true)
@@ -258,8 +249,8 @@ class LocationsController < ApplicationController
             86 => 87,
             87 => 88,
         }
-        if current_location.exits.include?("is locked")
-            return "The door to the east is locked."
+        if current_location.exits.include?("doorknob")
+            return "The door is missing a doorknob, so you can't open it. Perhaps you could try finding the missing doorknob?"
         elsif location_map.key?(current_location.id)
             new_location = Location.find(location_map[current_location.id])
             update_current_location(current_location, new_location)
@@ -323,7 +314,15 @@ class LocationsController < ApplicationController
             84 => 85,
         }
         current_location = Location.find_by(current_location: true)
-        if current_location.exits.include?("locked")
+        wizard_room = Location.find(41)
+        cottage_room = Location.find(49)
+        if current_location.id == 57 && (wizard_room.desc.include?("crackles") || cottage_room.desc.include?("crackles"))
+            new_location = Location.find(32)
+            current_location.update(current_location: false)
+            new_location.update(current_location: true)
+            new_location.update(visited: true)
+            return "You try to cross into the forest, but the tree spirit screams bloody murder at you, shouting something about you burning the flesh of its kin. It grows to the size a giant, picks you up, and chucks you across the valley, where you land with a splash in the middle of the lake."
+        elsif current_location.exits.include?("locked")
             return "The door to the south is locked."
         elsif location_map.key?(current_location.id)
             new_location = Location.find(location_map[current_location.id])
@@ -386,8 +385,6 @@ class LocationsController < ApplicationController
             80 => 79,
             82 => 81,
         }
-        # if current_location.exits.include?("locked")
-        #     return "The door to the west is locked."
         lantern = ItemsController.new.find_item(1)
         if current_location.id == 8 && (lantern.location_id != 3)
             return "The cave looks too dark to enter without a light source."
@@ -458,9 +455,16 @@ class LocationsController < ApplicationController
         shipwreck = Location.find(33)
         shipwreck.update(desc: "You hold your breath, swimming at the bottom of the lake. It's murky and eerily quiet here, cold water surrounds you. There's an old sunken shipwreck here, deteriorating into the mud. You can see a locked wooden chest nestled in the bowels of the ship.")
         cottage_exterior = Location.find(48)
-        cottage_exterior.update(exits: "he entrace to the cottage is directly east, but the door is missing a doorknob. Towards the north you spot the tower, to the south the wide forest resides, and another path winds westward through the trees.")
+        cottage_exterior.update(exits: "The entrance to the cottage is directly east, but the door is missing a doorknob. Towards the north you spot the tower, to the south the wide forest resides, and another path winds westward through the trees.")
+        cottage_interior = Location.find(49)
+        cottage_interior.update(desc: "The inside of the cottage is warm and inviting. The living room is filled with an overstuffed sofa and a worn rocking chair. A fire crackles in a stone hearth.")
         tower_entrance = Location.find(40)
-        tower_entrance.update(desc: "The stone tower stands tall, rising like a beacon in the forest. It's made from rough-hewn stone blocks, and the windows have been intricately created from colorful stained glass. There is a grumpy wizard here, rocking in a chair by the door. He hums to himself and eyes you suspiciously.")
+        tower_entrance.update(
+            desc:
+                "The stone tower stands tall, rising like a beacon in the forest. It's made from rough-hewn stone blocks, and the windows have been intricately created from colorful stained glass. There is a grumpy wizard here, rocking in a chair by the door. He hums to himself and eyes you suspiciously.",
+        )
+        wizard_room = Location.find(41)
+        wizard_room.update(desc: "The windowless room is filled to the brim with magical artifacts, books, potions, dried herbs, and plants you don't recognize. A large fire crackles in the hearth, casting the room in a warm glow.")
         Location.update_all(visited: false)
         Location.update_all(current_location: false)
         spawn_room = Location.find(5)
