@@ -20,7 +20,7 @@ function Game() {
     // SUBMIT USER INPUT
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
-            if (input === "reset") {
+            if (input === "reset" || ((input === "sleep" || input === "go to sleep") && outputs[outputs.length - 1].location_id == 92)) {
                 fetch(`/gamestates/${outputs[outputs.length - 1].id}`, {
                     method: "DELETE",
                 })
