@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react"
 import { useHistory } from "react-router-dom"
+import LoginForm from "./LoginForm"
+import NewUserForm from "./NewUserForm"
+import AuthenticatedUser from "./AuthenticatedUser"
 
 function User({ user, setUser }) {
     const [newUsername, setNewUsername] = useState("")
@@ -15,6 +18,10 @@ function User({ user, setUser }) {
         const storedUser = JSON.parse(localStorage.getItem("user"))
         if (storedUser) {
             setUser(storedUser)
+            setMode(null)
+        }
+        else {
+            setMode("login")
         }
     }, [])
 
@@ -33,16 +40,17 @@ function User({ user, setUser }) {
             if (r.ok) {
                 r.json().then((user) => {
                     setUser(user)
+                    setMode("logged in")
                     setUsername("")
                     setPassword("")
-                    console.log(`Signed in as: ${user.username}`)
+                    console.log(`Signed in.`)
                     localStorage.setItem("user", JSON.stringify(user))
                     history.push("/me")
                 })
             } else {
                 r.json().then((err) => {
-                    setErrors(err.errors)
-                    console.log(err.errors)
+                    setErrors(err.error)
+                    console.log(err.error)
                 })
             }
         })
@@ -78,105 +86,31 @@ function User({ user, setUser }) {
                 password: newPassword,
                 password_confirmation: passwordConfirmation,
             }),
+        }).then((r) => {
+            if (r.ok) {
+                r.json().then((user) => {
+                    setUser(user)
+                    setMode("logged in")
+                    setNewUsername("")
+                    setNewPassword("")
+                    setPasswordConfirmation("")
+                    console.log("Logged in.")
+                    localStorage.setItem("user", JSON.stringify(user))
+                })
+            } else {
+                r.json().then((err) => {
+                    setErrors(err.error)
+                    console.log(err.error)
+                })
+            }
         })
-            .then((r) => {
-                if (r.ok) {
-                    r.json().then((user) => {
-                        setUser(user)
-                        setNewUsername("")
-                        setNewPassword("")
-                        setPasswordConfirmation("")
-                        localStorage.setItem("user", JSON.stringify(user))
-                    })
-                } else {
-                    r.json().then((err) => {
-                        setErrors(err.errors)
-                        console.log(err.errors)
-                    })
-                }
-            })
     }
 
     return (
         <div>
-            {user === null ? (
-                <div>
-                    {mode === "login" ? (
-                        <div>
-                            {errors.length > 0 ? (
-                                <div className='form'>
-                                    <form onSubmit={handleLogin}>
-                                        <div>
-                                            <input type='text' id='username' autoComplete='off' placeholder='username' value={username} onChange={(e) => setUsername(e.target.value)} />
-                                        </div>
-                                        <div>
-                                            <input type='password' id='password' placeholder='password' autoComplete='current-password' value={password} onChange={(e) => setPassword(e.target.value)} />
-                                        </div>
-                                    </form>
-                                    <div>{errors}</div>
-                                    <button onClick={() => setErrors([])}>Try again</button>
-                                    <button onClick={toggleMode}>Switch to {mode === "login" ? "signup" : "login"}</button>
-                                </div>
-                            ) : (
-                                <div className='form'>
-                                    <form onSubmit={handleLogin}>
-                                        <div>
-                                            <input type='text' id='username' autoComplete='off' placeholder='username' value={username} onChange={(e) => setUsername(e.target.value)} />
-                                        </div>
-                                        <div>
-                                            <input type='password' id='password' placeholder='password' autoComplete='current-password' value={password} onChange={(e) => setPassword(e.target.value)} />
-                                        </div>
-                                        <button type='submit'>Log In</button>
-                                    </form>
-                                    <button onClick={toggleMode}>Switch to {mode === "login" ? "signup" : "login"}</button>
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <div>
-                            {errors.length > 0 ? (
-                                <div className='form'>
-                                    <form>
-                                        <div>
-                                            <input type='text' id='newUsername' value={newUsername} placeholder='username' onChange={(e) => setNewUsername(e.target.value)} />
-                                        </div>
-                                        <div>
-                                            <input type='password' id='newPassword' value={newPassword} placeholder='password' onChange={(e) => setNewPassword(e.target.value)} />
-                                        </div>
-                                        <div>
-                                            <input type='password' id='passwordConfirmation' value={passwordConfirmation} placeholder='password confirmation' onChange={(e) => setPasswordConfirmation(e.target.value)} />
-                                        </div>
-                                    </form>
-                                    <div>{errors}</div>
-                                    <button onClick={() => setErrors([])}>Try again</button>
-                                    <button onClick={toggleMode}>Switch to {mode === "login" ? "signup" : "login"}</button>
-                                </div>
-                            ) : (
-                                <div className='form'>
-                                    <form onSubmit={handleNewUser}>
-                                        <div>
-                                            <input type='text' id='newUsername' value={newUsername} placeholder='username' onChange={(e) => setNewUsername(e.target.value)} />
-                                        </div>
-                                        <div>
-                                            <input type='password' id='newPassword' value={newPassword} placeholder='password' onChange={(e) => setNewPassword(e.target.value)} />
-                                        </div>
-                                        <div>
-                                            <input type='password' id='passwordConfirmation' value={passwordConfirmation} placeholder='password confirmation' onChange={(e) => setPasswordConfirmation(e.target.value)} />
-                                        </div>
-                                        <button type='submit'>Sign up</button>
-                                    </form>
-                                    <button onClick={toggleMode}>Switch to {mode === "login" ? "signup" : "login"}</button>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-            ) : (
-                <div className='form'>
-                    <p>Welcome, {user.username}</p>
-                    <button onClick={handleLogout}>Log Out</button>
-                </div>
-            )}
+            {mode === 'login' && <LoginForm handleLogin={handleLogin} setErrors={setErrors} errors={errors} username={username} setUsername={setUsername} password={password} setPassword={setPassword} toggleMode={toggleMode} />}
+            {mode === 'signup' && <NewUserForm handleNewUser={handleNewUser} setErrors={setErrors} errors={errors} newUsername={newUsername} setNewUsername={setNewUsername} newPassword={newPassword} setNewPassword={setNewPassword} passwordConfirmation={passwordConfirmation} setPasswordConfirmation={setPasswordConfirmation} toggleMode={toggleMode} />}
+            {user !== null && <AuthenticatedUser username={user.username} handleLogout={handleLogout} />}
         </div>
     )
 }
