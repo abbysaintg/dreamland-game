@@ -94,9 +94,10 @@ class GamestatesController < ApplicationController
     end
 
     def destroy
+        user = User.find(params[:user_id])
+        user.gamestates.where.not(id: Gamestate.where(user_id: user.id).order(:id).limit(3)).destroy_all
         LocationsController.new.reset_locations()
         ItemsController.new.reset_inventory()
-        Gamestate.where("id > 3").destroy_all
         head :no_content
     end
 end

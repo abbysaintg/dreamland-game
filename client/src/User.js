@@ -12,7 +12,7 @@ function User({ user, setUser }) {
     const [mode, setMode] = useState("login")
     const [passwordConfirmation, setPasswordConfirmation] = useState("")
     const [errors, setErrors] = useState([])
-    let history = useHistory()
+    // let history = useHistory()
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem("user"))
@@ -46,7 +46,7 @@ function User({ user, setUser }) {
                     setPassword("")
                     console.log(`Logged in.`)
                     localStorage.setItem("user", JSON.stringify(user))
-                    history.push("/me")
+                    // history.push("/me")
                 })
             } else {
                 r.json().then((err) => {
@@ -55,8 +55,7 @@ function User({ user, setUser }) {
                 })
             }
         })
-
-        e.target.reset()
+        // console.log(history)
     }
 
     const handleLogout = () => {

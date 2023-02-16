@@ -6,15 +6,7 @@ class UsersController < ApplicationController
     end
 
     def show 
-        # user = @current_user
-        # if user
-        #     render json: @current_user
-        # else 
-        #     render json: { error: "Wrong username or password." }, status: :not_found
-        # end
         render json: @current_user
-        # user = User.find(params[:id])
-        # render json: user
     end
 
     def create 

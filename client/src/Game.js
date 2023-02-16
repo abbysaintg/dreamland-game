@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react"
 function Game({ user }) {
     const [outputs, setOutputs] = useState([])
     const [input, setInput] = useState("")
-    const [gameStart, setGameStart] = useState(false)
+    const [showStart, setShowStart] = useState(true)
     const inputRef = useRef(null)
     const containerRef = useRef(null)
     const bottomRef = useRef(null)
@@ -14,6 +14,7 @@ function Game({ user }) {
         fetch(`/users/${user.id}/gamestates`)
             .then((r) => r.json())
             .then((data) => {
+                console.log(data)
                 setOutputs(data)
             })}
         else {
@@ -24,42 +25,40 @@ function Game({ user }) {
     // SUBMIT USER INPUT
     const handleKeyDown = (e) => {
         if (e.key === "Enter" && user != null) {
-            if (input === "reset" || ((input === "sleep" || input === "go to sleep") && outputs[outputs.length - 1].location_id === 92)) {
-                setGameStart(false)
-                fetch(`/gamestates/${outputs[outputs.length - 1].id}`, {
+            if (showStart === true && input != "start") {
+                return
+            }
+            else if (input === "reset" || (input.includes("sleep") && outputs[outputs.length - 1].location_id === 92))  {
+                fetch(`/users/${user.id}/gamestates/${outputs[outputs.length - 1].id}`, {
                     method: "DELETE",
+                    headers: {'Content-Type': 'application/json'}
                 })
-                    .then((resp) => {
-                        if (!resp.ok) {
-                            throw new Error(`Failed to reset, status code: ${outputs.status}`)
-                        }
-                        return resp
-                    })
-                    .then(() => {
-                        console.log("game reset")
-                        setOutputs([outputs[0], outputs[1], outputs[2]])
+                .catch((err) => console.error(err.error))
+                setShowStart(true)
+                setInput("")
+                console.log(outputs)
+                inputRef.current.focus()
+            } else if (input === "start" && user != null) {
+                fetch(`/users/${user.id}/gamestates`)
+                    .then((resp) => resp.json())
+                    .then((data) => {
+                        setShowStart(false)
+                        setOutputs(data)
                         setInput("")
                         inputRef.current.focus()
                     })
-                    .catch((error) => {
-                        console.error(error)
-                    })
-            } else if (input === "start") {
-                e.preventDefault()
-                setGameStart(true)
-                setInput("")
+                    .catch((err) => console.error(err.error))
             } else {
-                fetch("/gamestates", {
+                fetch(`/users/${user.id}/gamestates`, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({ input }),
                 })
                     .then((resp) => resp.json())
                     .then((resp) => {
+                        setOutputs((prevOutputs) => [...prevOutputs, resp]);
                         console.log(resp)
-                        setOutputs([...outputs, resp])
+                        console.log(outputs)
                         setInput("")
                         inputRef.current.focus()
                     })
@@ -86,7 +85,7 @@ function Game({ user }) {
 
     return (
         <div className='left'>
-            {gameStart === true  && user != null ? (
+            {user != null && showStart === false ? (
                 <div className='outputs-container' ref={containerRef}>
                     {outputs.map((output) => (
                         <div key={output.id} ref={output.id === outputs[outputs.length - 1].id ? bottomRef : null}>
@@ -105,7 +104,9 @@ function Game({ user }) {
                         <p>|  '--'  ||  |\  \----.|  |____ /  _____  \  |  |  |  | |  `----./  _____  \  |  |\   | |  '--'  |</p>
                         <p>|_______/ | _| `._____||_______/__/     \__\ |__|  |__| |_______/__/     \__\ |__| \__| |_______/ </p>
                     </div>
-                    {user != null ? <div>{gameStart === true ? (<div className="info-text">TYPE <span className="start">START</span> TO BEGIN</div>) : (<div className="info-text">TYPE <span className="start">START</span> TO RESTART</div>)}</div> : <div className="info-text">PLEASE <span className="start">LOG IN</span>  TO PLAY</div>}
+                    <div className="info-text">
+                    {user != null ? <div>TYPE <span className="start">START</span> TO BEGIN</div> : <div>PLEASE <span className="start">LOG IN</span> TO PLAY</div>}
+                    </div>
                 </div>
             )}
             <input className='inputs-container' type='text' placeholder='type something...' value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} onFocus={handleFocus} onBlur={handleBlur} ref={inputRef} />

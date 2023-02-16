@@ -83,32 +83,28 @@ class ItemsController < ApplicationController
     end
 
     def take_item(input, current_location_id)
-        item_to_take = Item.where("name LIKE ?", "%#{input}%").find_by(location_id: current_location_id)
+        item_to_take = Item.find_by(name: input)
+        current_location = LocationsController.new.get_location(current_location_id)
         shipwreck = LocationsController.new.get_location(33)
-        basin = Item.find_by(name: "basin")
-        bird = Item.find_by(name: "sparrow")
-        bird_ghost = Item.find_by(name: "ghost of a sparrow")
-        wizard = Item.find_by(name: "wizard")
         doorknob = Item.find_by(name: "doorknob")
         empty_bucket = Item.find_by(name: "empty bucket")
-        bucket_of_water = Item.find_by(name: "bucket of water") 
-        if item_to_take == basin
+        if (input.include?("basin") && current_location_id == 9) || (input.include?("arch") && current_location_id == 10)
             return "That's much too large to take with you."
-        elsif item_to_take == wizard
-            return "You can't take the wizard. That would be kidnapping!"
-        elsif item_to_take == bird
-            return "You can't take the bird with you."
-        elsif item_to_take == bird_ghost
-            return "So you first murder the poor bird and now you want to kidnap his ghost??"
-        elsif item_to_take == doorknob
+        elsif (input.include?("wizard") && current_location_id == 40) || (input.include?("bird") && current_location_id == 18) || (input.include?("sparrow") && current_location_id == 18)
+            return "You can't take the #{input}. That would be kidnapping!"
+        elsif input.include?("doorknob") && current_location_id == 33
             doorknob.update(location_id: 3)
             shipwreck.update(desc: "You hold your breath, swimming at the bottom of the lake. It's murky and eerily quiet here, cold water surrounds you. There's an old sunken shipwreck here, deteriorating into the mud. You can see an opened wooden chest nestled in the bowels of the ship. The chest is empty.")
             return "You take the doorknob out of the chest."
-        elsif item_to_take 
+        elsif input.include?("bucket") && empty_bucket.location_id == current_location_id
+            return "You take the empty bucket."
+        elsif item_to_take && item_to_take.location_id == current_location_id
             item_to_take.update(location_id: 3)
             return "You take the #{item_to_take.name}."
+        elsif current_location.desc.include?("#{input}")
+            return "You can't take the #{input} with you."
         else 
-            return "You don't see that here."
+            return "I don't see that here."
         end
     end
 
