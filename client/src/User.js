@@ -19,6 +19,7 @@ function User({ user, setUser }) {
         if (storedUser) {
             setUser(storedUser)
             setMode(null)
+            console.log(`Logged in.`)
         }
         else {
             setMode("login")
@@ -43,7 +44,7 @@ function User({ user, setUser }) {
                     setMode("logged in")
                     setUsername("")
                     setPassword("")
-                    console.log(`Signed in.`)
+                    console.log(`Logged in.`)
                     localStorage.setItem("user", JSON.stringify(user))
                     history.push("/me")
                 })
