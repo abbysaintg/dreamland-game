@@ -1,7 +1,8 @@
 puts "Clearing db..."
+User.destroy_all
 Gamestate.destroy_all
-Location.destroy_all
 Item.destroy_all
+Location.destroy_all
 
 puts "Creating Locations"
 L1 = Location.create(current_location: false, name: "void", desc: "An endless space of darkness and mystery.", exits: "There are no exits.")
@@ -123,9 +124,12 @@ I22 = Item.create(location_id: 52, name: "well", desc: "A stone well. It's missi
 I23 = Item.create(location_id: 33, name: "chest", desc: "A waterlogged old wooden chest. There's a rusted keyhole on the front.")
 I24 = Item.create(location_id: 10, name: "archway", desc: "A beautiful stone archway, six gemstones have been placed on the archway, but it's missing a seventh. A forcefield hums around it.")
 
+puts "Creating Users"
+User.create(username: "admin", password: "123")
+
 puts "Creating Gamestates"
-Gamestate.create(location_id: 4, output: "Welcome!")
-Gamestate.create(location_id: 4, output: "If you need help, try typing \"help\".")
-Gamestate.create(location_id: 4, output: "You are half asleep in bed. Moonlight streams through the window, casting the room in shadows. The clock on your nightstand reads 2:34AM. A ghostly figure stands at the end of your bed, a translucent hand extended to you.")
+# Gamestate.create(location_id: 4, user_id: U1.id, output: "Welcome to Dreamland.")
+# Gamestate.create(location_id: 4, user_id: U1.id, output: "If you need help, try typing \"help\" and then hit enter.")
+# Gamestate.create(location_id: 4, user_id: U1.id, output: "You are half asleep in bed. Moonlight streams through the window, casting the room in shadows. The clock on your nightstand reads 2:34AM. A ghostly figure stands at the end of your bed, a translucent hand extended to you.")
 
 puts "Finished seeding!"

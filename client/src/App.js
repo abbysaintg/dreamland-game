@@ -1,22 +1,20 @@
-import { BrowserRouter, Switch, Route } from "react-router-dom"
-import './index.css'
+import { useState } from "react"
+import "./index.css"
+import User from "./User.js"
 import Game from "./Game.js"
+import AboutMe from "./AboutMe.js"
 
 function App() {
+    const [user, setUser] = useState(null)
 
     return (
-        <BrowserRouter>
-            <div>
-                <Switch>
-                    <Route path='/'>
-                        <Game />
-                    </Route>
-                    <Route path='/testing'>
-                        <h1>Test Route</h1>
-                    </Route>
-                </Switch>
+        <div className='app'>
+            <Game user={user}/>
+            <div className='right'>
+                <AboutMe />
+                <User user={user} setUser={setUser} />
             </div>
-        </BrowserRouter>
+        </div>
     )
 }
 

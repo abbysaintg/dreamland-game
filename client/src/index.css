@@ -2,35 +2,112 @@
 *::before,
 *::after {
     box-sizing: border-box;
-    /* user-select: none; */
+    user-select: none;
     background-color: black;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: "Courier New", Courier, monospace;
+    color: antiquewhite;
 }
 
 body {
+    overflow-x: hidden;
+    overflow-y: hidden; 
     margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
 }
 
-input {
-    outline-width: 0;
-}
-
-.game-container {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 14fr 1fr;
+.app {
+    display: flex;
     width: 90vw;
     height: 90vh;
 }
 
-.outputs-container {
-    border: solid 2px #302E2D;
+.right {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 2fr;
+    width: 200px;
+}
+
+.about-me {
+    border: solid 2px #302e2d;
+    margin-left: 20px;
+    padding: 30px 20px 10px 20px;
+}
+
+.about-me-title {
+    font-size: 5px;
+    white-space: pre;
+    line-height: 0;
+    color: white;
+}
+
+.about-me-links {
+    list-style-type: none;
+    text-align: center;
+    padding: 20px 0px;
+    opacity: 0.9;
+}
+
+.about-me-links li {
+    padding: 5px;
+}
+
+.about-me-links a {
+    text-decoration: none;
+    opacity: 0.7;
+}
+
+.about-me-links a:hover {
+    font-style: italic;
+    color: goldenrod;
+}
+
+.form {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    text-align: center;
+}
+
+form {
+    display: grid;
+}
+
+.form input {
+    margin: 20px 0px 0px 20px;
+    padding: 10px 20px;
+    border: solid 2px #302e2d;
+    outline: none;
+}
+
+button {
+    margin: 20px 0px 0px 20px;
+    padding: 10px;
+    border: solid 2px #302e2d;
     background: transparent;
-    color: antiquewhite;
+    cursor: pointer;
+}
+
+button:hover {
+    background: antiquewhite;
+    color: black;
+    transition: 0.5s;
+}
+
+.left {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 14fr 1fr;
+    width: 100%;
+}
+
+.outputs-container {
+    border: solid 2px #302e2d;
+    background: transparent;
     font-size: 2vh;
     padding: 30px;
     max-height: 83vh;
@@ -51,15 +128,35 @@ input {
 }
 
 .inputs-container {
-    border: solid 2px #302E2D;
+    border: solid 2px #302e2d;
     background: transparent;
-    color: antiquewhite;
-    font-size: 2vh;
-    width: 100%;
-    height: 100%;
-    padding: 0px 30px; 
     outline: none;
+    padding: 10px;
+    font-size: 2vh;
 }
 
+.game-start-end-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border: solid 2px #302e2d;
+    background: transparent;
+    padding: 30px;
+    max-height: 83vh;
+}
 
-                                                                                                  
+.title {
+    font-size: 1.7vh;
+    white-space: pre;
+    line-height: 0;
+}
+
+.info-text {
+    font-size: 2vh;
+    padding: 30px;
+}
+
+.start {
+    color: goldenrod;
+}

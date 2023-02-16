@@ -1,6 +1,9 @@
 class GamestatesController < ApplicationController
+
     def index
-        render json: Gamestate.all
+        user = @current_user
+        gamestates = user.gamestates
+        render json: gamestates
     end
 
     def create
@@ -64,6 +67,8 @@ class GamestatesController < ApplicationController
             output = "You say \"#{$1}\", but no one seems to be listening."
         when /^(walk|walk |go |go)$/
             output = "Where would you like to go?"
+        when /^(swim)$/
+            output = "Where would you like to swim?"
         when /^(sleep|go to sleep)$/
             output = "You try to fall asleep, but are unsuccessful."
         when /^(wake|wake up)$/
@@ -77,14 +82,15 @@ class GamestatesController < ApplicationController
         when /^(cheat|cheats)$/
             output = "Come on now, that's hardly called for."
         when "help"
-            output = "If you don't know what to do next, you might want to try the basics: LOOK, EXAMINE, INVENTORY, TAKE, PLACE, GIVE, SEARCH, FIX and WEAR."
+            output = "If you don't know what to do next, you might want to try the basics: LOOK, EXAMINE, INVENTORY, TAKE, PLACE, GIVE, SEARCH, FIX and WEAR. At anytime you may type RESET to restart the game."
         else
             output = "I don't understand \"#{input}\"."
         end
 
         updated_location_id = LocationsController.new.get_location_id()
-        gamestate = Gamestate.create(input: input, output: output, location_id: updated_location_id)
-        render json: { input: input, output: output, id: gamestate.id, location_id: updated_location_id }
+        user_id = @current_user.id
+        gamestate = Gamestate.create(input: input, output: output, location_id: updated_location_id, user_id: user_id)
+        render json: { input: input, output: output, id: gamestate.id, location_id: updated_location_id, user_id: user_id }
     end
 
     def destroy
