@@ -124,10 +124,10 @@ I22 = Item.create(location_id: 52, name: "well", desc: "A stone well. It's missi
 I23 = Item.create(location_id: 33, name: "chest", desc: "A waterlogged old wooden chest. There's a rusted keyhole on the front.")
 I24 = Item.create(location_id: 10, name: "archway", desc: "A beautiful stone archway, six gemstones have been placed on the archway, but it's missing a seventh. A forcefield hums around it.")
 
-puts "Creating Users"
-User.create(username: "admin", password: "123")
+# puts "Creating Users"
+# User.create(username: "admin", password: "123")
 
-puts "Creating Gamestates"
+# puts "Creating Gamestates"
 # Gamestate.create(location_id: 4, user_id: U1.id, output: "Welcome to Dreamland.")
 # Gamestate.create(location_id: 4, user_id: U1.id, output: "If you need help, try typing \"help\" and then hit enter.")
 # Gamestate.create(location_id: 4, user_id: U1.id, output: "You are half asleep in bed. Moonlight streams through the window, casting the room in shadows. The clock on your nightstand reads 2:34AM. A ghostly figure stands at the end of your bed, a translucent hand extended to you.")
