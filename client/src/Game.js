@@ -25,7 +25,7 @@ function Game({ user }) {
     // SUBMIT USER INPUT
     const handleKeyDown = (e) => {
         if (e.key === "Enter" && user != null) {
-            if (showStart === true && input != "start") {
+            if (showStart === true && input !== "start") {
                 return
             }
             else if (input === "reset" || (input.includes("sleep") && outputs[outputs.length - 1].location_id === 92))  {

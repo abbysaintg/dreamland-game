@@ -92,7 +92,7 @@ class LocationsController < ApplicationController
             archway_item.update(desc: "A beautiful stone archway, seven gemstones have been embedded into the stone.")
             return "You place the ruby into the slot on the archway. The forcefield shivers and sputters and then dies out completely, allowing you entry into the valley."
         elsif current_location.id == 10
-            return "You don't have a gem affix to the archway."
+            return "You don't have a gem to affix to the archway."
         else 
             return "I'm sorry, what?"
         end
@@ -107,7 +107,7 @@ class LocationsController < ApplicationController
             return "You unlock the chest."
         elsif current_location == shipwreck && shipwreck.desc.include?("a locked wooden chest")
             return "You do not have a key to unlock this chest."
-        elsif current_location == shipwreck && shipwreck.desc.include?("an unlocked wooden chest")
+        elsif current_location == shipwreck && shipwreck.desc.include?("unlocked but closed")
             return "The chest is already unlocked, but remains closed."
         else
             return "I don't see a chest here."

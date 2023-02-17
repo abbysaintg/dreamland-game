@@ -36,7 +36,7 @@ class ItemsController < ApplicationController
             ruby.update(location_id: 3)
             basin.update(location_id: 1)
             cave.update(desc: "The weak glow from your lantern barely lights your nearby surroundings, let alone the entire expanse of the wide cave. Strange whispers and the rustling of unseen things echo from the depths, making the hairs on the back of your neck stand on end.")
-            return "You stick your hand into the inky black liquid and pull out a blood red ruby. The basin and the black liquid disappear in flash of smoke."
+            return "You stick your hand into the inky black liquid and pull out a blood red gemstone. The basin and the black liquid disappear in flash of smoke, leaving you with pristine ruby."
         elsif input.include?("chest") && shipwreck.desc.include?("doorknob") && current_location_id == 33
             doorknob.update(location_id: 3)
             shipwreck.update(desc: "You hold your breath, swimming at the bottom of the lake. It's murky and eerily quiet here, cold water surrounds you. There's an old sunken shipwreck here, deteriorating into the mud. You can see an opened wooden chest nestled in the bowels of the ship. The chest is empty.")
@@ -88,14 +88,16 @@ class ItemsController < ApplicationController
         shipwreck = LocationsController.new.get_location(33)
         doorknob = Item.find_by(name: "doorknob")
         empty_bucket = Item.find_by(name: "empty bucket")
-        if (input.include?("basin") && current_location_id == 9) || (input.include?("arch") && current_location_id == 10)
+        if (input.include?("basin") && current_location_id == 9) || (input.include?("arch") && current_location_id == 10) || (input.include?("chest") && current_location_id == 33)
             return "That's much too large to take with you."
         elsif (input.include?("wizard") && current_location_id == 40) || (input.include?("bird") && current_location_id == 18) || (input.include?("sparrow") && current_location_id == 18)
             return "You can't take the #{input}. That would be kidnapping!"
-        elsif input.include?("doorknob") && current_location_id == 33
+        elsif input.include?("doorknob") && shipwreck.desc.include?("doorknob") && current_location_id == 33
             doorknob.update(location_id: 3)
             shipwreck.update(desc: "You hold your breath, swimming at the bottom of the lake. It's murky and eerily quiet here, cold water surrounds you. There's an old sunken shipwreck here, deteriorating into the mud. You can see an opened wooden chest nestled in the bowels of the ship. The chest is empty.")
             return "You take the doorknob out of the chest."
+        elsif input.include?("doorknob") && !shipwreck.desc.include?("doorknob") && current_location_id == 33 
+            return "I don't see that here."
         elsif input.include?("bucket") && empty_bucket.location_id == current_location_id
             return "You take the empty bucket."
         elsif item_to_take && item_to_take.location_id == current_location_id
