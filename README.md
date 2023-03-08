@@ -16,7 +16,7 @@ https://user-images.githubusercontent.com/116386196/223834449-3d57f30b-13ee-4890
 To play, you'll need to have Ruby, Rails, Node.js, and NPM installed on your machine. Once you have those installed, you can follow these steps:
 
 1. Clone the repository
-2. Navigate to the project directory: `cd text-adventure-game`
+2. Navigate to the project directory: `cd dreamland-game`
 3. Install dependencies: `bundle install`
 4. Navigate to the client directory: `cd client`
 5. Install dependencies: `npm install`
