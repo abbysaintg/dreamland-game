@@ -8,6 +8,8 @@ This game was created for my phase 4 project at Flatiron's Software Engineering 
 
 ## DEMO
 
+https://user-images.githubusercontent.com/116386196/223834449-3d57f30b-13ee-4890-8b9d-df06748e421a.mov
+
 
 ## GETTING STARTED
 
