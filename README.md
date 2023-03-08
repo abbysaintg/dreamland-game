@@ -1,27 +1,24 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Dreamland is a text-based adventure game inspired by both old and new text games.
 
-Things you may want to cover:
+This is a Ruby on Rails and React app that utilizies a minimal frontend but complex game logic within the Ruby models and controllers.
 
-* Ruby version
+This game was created for my phase 4 project at Flatiron's Software Engineering Bootcamp.
 
-* System dependencies
+## DEMO
 
-* Configuration
 
-* Database creation
+## GETTING STARTED
 
-* Database initialization
+To play, you'll need to have Ruby, Rails, Node.js, and NPM installed on your machine. Once you have those installed, you can follow these steps:
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-class GamestatesController < ApplicationController
-
- 
+1. Clone the repository
+2. Navigate to the project directory: `cd text-adventure-game`
+3. Install dependencies: `bundle install`
+4. Navigate to the client directory: `cd client`
+5. Install dependencies: `npm install`
+6. Create the database: `rails db:create`
+7. Migrate the database: `rails db:migrate`
+8. Start the Rails server: `rails s`
+9. In a separate terminal window, start the React app: `npm start`
