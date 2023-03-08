@@ -2,7 +2,7 @@
 
 Dreamland is a text-based adventure game inspired by both old and new text games.
 
-This is a Ruby on Rails and React app that utilizies a minimal frontend but complex game logic within the Ruby models and controllers.
+This is a Ruby on Rails and React app that utilizies a minimal frontend but complex game logic within the Ruby models and controllers. It has features user authentication, progress saving, an inventory system, and a 5 quest storyline. 
 
 This game was created for my phase 4 project at Flatiron's Software Engineering Bootcamp.
 
